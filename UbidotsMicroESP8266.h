@@ -63,15 +63,15 @@ Modified by: Maria Carlina Hernandez
 const float ERROR_VALUE = -3.4028235E+8;
 
 typedef struct Value {
-  char  *id;
-  char *context;
+  const char *id;
+  const char *context;
   float value_id;
   unsigned long timestamp;
 } Value;
 
 class Ubidots {
  public:
-    Ubidots(char* token, char* server = SERVER);
+    Ubidots(const char* token, const char* server = SERVER);
     bool sendAll(bool type = false);
     bool sendHTTP();
     bool sendTLATE();
@@ -80,12 +80,12 @@ class Ubidots {
     float getValueWithDevice(char* dsLabel, char* varLabel);
     long getVarTimestamp(char* id);
     char* getVarContext(char* id);
-    void add(char *variable_id, float value);
-    void add(char *variable_id, float value, char *ctext);
-    void add(char *variable_id, float value, unsigned long timestamp);
-    void add(char *variable_id, float value, char *ctext, unsigned long timestamp);
+    void add(const char *variable_id, float value);
+    void add(const char *variable_id, float value, const char *ctext);
+    void add(const char *variable_id, float value, unsigned long timestamp);
+    void add(const char *variable_id, float value, const char *ctext, unsigned long timestamp);
     void setDebug(bool debug);
-    bool wifiConnection(char *ssid, char *pass);
+    void wifiConnection(const char *ssid, const char *pass);
     void setDataSourceName(char* dataSoruceName);
     void setDataSourceLabel(char* dataSoruceLabel);
     unsigned long ntpUnixTime ();
@@ -93,9 +93,9 @@ class Ubidots {
  private:
     void idAsMac();
     bool _debug = false;
-    char* _token;
-    char* _server;
-    char* _dsName;
+    const char* _token;
+    const char* _server;
+    const char* _dsName;
     char* _idName;
     char* _espID = (char *) malloc(sizeof(char) * 100);
     char* _context = (char *) malloc(sizeof(char) * 100);

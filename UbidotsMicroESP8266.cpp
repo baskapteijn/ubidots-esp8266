@@ -33,7 +33,7 @@ Modified by: Maria Carlina Hernandez for Ubidots
 /**
  * Constructor.
  */
-Ubidots::Ubidots(char* token, char* server) {
+Ubidots::Ubidots(const char* token, const char* server) {
 
   _token = token;
   _server = server;
@@ -89,7 +89,7 @@ long Ubidots::getVarTimestamp(char* id) {
     }
     _client.println(data);
   } else {
-    ERROR_VALUE;
+    return (long)ERROR_VALUE; //todo: fix this, cast is temporary
   }
 
   int timeout = 0;
@@ -97,7 +97,7 @@ long Ubidots::getVarTimestamp(char* id) {
   while(!_client.available() && timeout <= 5000) {
     timeout++;
     if (timeout == 4999){
-      return ERROR_VALUE;
+      return (long)ERROR_VALUE; //todo: fix this, cast is temporary
     }
     if (_client.available()){
       break;
@@ -126,7 +126,7 @@ long Ubidots::getVarTimestamp(char* id) {
   if (pch != NULL){
     char *pch2 = strchr(pch, ':');
     if (pch2 != NULL){
-      int index = (int)(pch2 - pch - 1);
+      size_t index = (size_t)(pch2 - pch - 1);
       memcpy(final, pch2, index);
       final[0] = '0';  //Replaces ':' by zero
       final[1] = '0';  //Replaces ' ' by zero
@@ -140,7 +140,7 @@ long Ubidots::getVarTimestamp(char* id) {
 
   free(response);
   free(final);
-  return ERROR_VALUE;
+    return (long)ERROR_VALUE; //todo: fix this, cast is temporary
 }
 
 /**
@@ -164,7 +164,7 @@ char* Ubidots::getVarContext(char* id) {
     }
     _client.println(data);
   } else {
-    return "e";
+    return (char *)"e"; //todo: decide if return type should be const char * or leave this cast
   }
 
   free(data);
@@ -173,7 +173,7 @@ char* Ubidots::getVarContext(char* id) {
   while(!_client.available() && timeout < 5000) {
     timeout++;
     if (timeout >= 4999){
-        return "e";
+        return (char *)"e"; //todo: decide if return type should be const char * or leave this cast
     }
     delay(1);
   }
@@ -209,7 +209,7 @@ char* Ubidots::getVarContext(char* id) {
   }
 
   free(response);
-  return "e";
+    return (char *)"e"; //todo: decide if return type should be const char * or leave this cast
 }
 
 /**
@@ -340,16 +340,16 @@ float Ubidots::getValueWithDevice(char* dsLabel, char* varLabel){
  * @arg value variable value to save in a struct
  */
 
-void Ubidots::add(char *variable_id, float value) {
-  return add(variable_id, value, NULL, NULL);
+void Ubidots::add(const char *variable_id, float value) {
+  return add(variable_id, value, NULL, 0);
 }
-void Ubidots::add(char *variable_id, float value, char *ctext) {
-  return add(variable_id, value, ctext, NULL);
+void Ubidots::add(const char *variable_id, float value, const char *ctext) {
+  return add(variable_id, value, ctext, 0);
 }
-void Ubidots::add(char *variable_id, float value, unsigned long timestamp) {
+void Ubidots::add(const char *variable_id, float value, unsigned long timestamp) {
   return add(variable_id, value, NULL, timestamp);
 }
-void Ubidots::add(char *variable_id, float value, char *ctext, unsigned long timestamp) {
+void Ubidots::add(const char *variable_id, float value, const char *ctext, unsigned long timestamp) {
   (val+currentValue)->id = variable_id;
   (val+currentValue)->value_id = value;
   (val+currentValue)->context = ctext;
@@ -385,7 +385,7 @@ bool Ubidots::sendTLATE() {
 
     sprintf(data, "%s%s:%s", data, (val + i)->id, str.c_str());
 
-    if ((val + i)->timestamp != NULL) {
+    if ((val + i)->timestamp != 0) {
       sprintf(data, "%s@%lu%s", data, (val + i)->timestamp, "000");
     }
     if ((val + i)->context != NULL) {
@@ -482,7 +482,7 @@ void Ubidots::setDebug(bool debug){
 }
 
 
-bool Ubidots::wifiConnection(char* ssid, char* pass) {
+void Ubidots::wifiConnection(const char* ssid, const char* pass) {
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
